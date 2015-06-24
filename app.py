@@ -103,6 +103,31 @@ def email_test():
 
 
 # -------------------------------------------
+# functions
+
+insults_array = [
+    'smells bad',
+    'is a dumbass',
+    'makes Kim Kardashian look like a goddamn genius',
+    'is unable to see why kids love the great taste of Cinnamon Toast Crunch',
+    'makes baby Jesus cry',
+    'thinks MDMA is a web comic'
+        ]
+
+# insult the user
+def abuse( arguments ):
+
+    # generate a random whole number
+    limit = len( insults_array ) - 1
+    insult = insults_array[ random.randint( 0 , limit ) ]
+
+    # concatenate the arguments into a string
+    victim = ' '.join( arguments )
+
+    return victim + ' ' + insult + '!'
+
+
+# -------------------------------------------
 # routes ( live )
 
 # some route goes here
@@ -123,10 +148,14 @@ def slack():
     arguments = list(input_array)
     arguments.pop( 0 )
 
-    # prepare the stuff
-    output = str( command )
+    # -------------------
+    # check the command
+    
+    if str(command) == 'abuse':
+        output = abuse( arguments )
+        return output
 
-    return output
+    return 'does not compute'
 
 
 # create catch-all that sends the user to add_points

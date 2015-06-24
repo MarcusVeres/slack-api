@@ -7,6 +7,7 @@ import ConfigParser
 from bson.json_util import dumps
 from flask.ext.cors import CORS
 import sendgrid
+import pprint
 
 
 # -------------------------------------------
@@ -108,7 +109,24 @@ def email_test():
 @app.route('/slack' , methods=['POST'])
 def slack():
 
-    return "hiya, bob"
+    # get the raw post data
+    user_input = request.get_data()
+
+    # break apart the input into an array
+    input_array = user_input.split(' ')
+
+    # the first word of the input is the command
+    command = input_array[0]
+
+    # the following words are going to be arguments
+    # so we clone the old list, then splice out the first argument
+    arguments = list(input_array)
+    arguments.pop( 0 )
+
+    # prepare the stuff
+    output = str( command )
+
+    return output
 
 
 # create catch-all that sends the user to add_points

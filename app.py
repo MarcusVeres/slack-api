@@ -137,8 +137,6 @@ def slack():
     # get the raw post data
     user_input = request.form.get('text')
 
-    return user_input
-
     # break apart the input into an array
     input_array = user_input.split(' ')
 

@@ -135,6 +135,36 @@ def abuse( arguments ):
 def slack():
 
     # get the raw post data
+    user_input = request.form.get('text')
+
+    return user_input
+
+    # break apart the input into an array
+    input_array = user_input.split(' ')
+
+    # the first word of the input is the command
+    command = input_array[0]
+
+    # the following words are going to be arguments
+    # so we clone the old list, then splice out the first argument
+    arguments = list(input_array)
+    arguments.pop( 0 )
+
+    # -------------------
+    # check the command
+    
+    if str(command) == 'abuse':
+        output = abuse( arguments )
+        return output
+
+    return 'does not compute'
+
+
+# some route goes here
+@app.route('/raw' , methods=['POST'])
+def raw():
+
+    # get the raw post data
     user_input = request.get_data()
 
     # break apart the input into an array

@@ -105,6 +105,11 @@ def email_test():
 # routes ( live )
 
 # some route goes here
+@app.route('/slack')
+def slack():
+
+    return "hiya, bob"
+
 
 # create catch-all that sends the user to add_points
 #'You want path: %s' % path

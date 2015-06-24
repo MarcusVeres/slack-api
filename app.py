@@ -105,7 +105,7 @@ def email_test():
 # routes ( live )
 
 # some route goes here
-@app.route('/slack')
+@app.route('/slack' , methods=['POST'])
 def slack():
 
     return "hiya, bob"

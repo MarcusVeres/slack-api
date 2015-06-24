@@ -8,6 +8,7 @@ from bson.json_util import dumps
 from flask.ext.cors import CORS
 import sendgrid
 import pprint
+import requests
 
 
 # -------------------------------------------
@@ -57,6 +58,45 @@ def hash_something( something ):
     
     return hashlib.sha512( app.secret_key + something ).hexdigest()
 
+#
+
+insults_array = [
+    'smells bad',
+    'is a dumbass',
+    'makes Kim Kardashian look like a goddamn genius',
+    'is unable to see why kids love the great taste of Cinnamon Toast Crunch',
+    'makes baby Jesus cry',
+    'thinks MDMA is a web comic'
+        ]
+
+# insult the user
+def abuse( arguments ):
+
+    # generate a random whole number
+    limit = len( insults_array ) - 1
+    insult = insults_array[ random.randint( 0 , limit ) ]
+
+    # concatenate the arguments into a string
+    victim = ' '.join( arguments )
+
+    return victim + ' ' + insult + '!'
+
+
+# write to slack
+def write_to_slack( message ):
+
+    # reference:
+    # curl -X POST --data-urlencode 'payload={"channel": "#slack-command-test", "username": "webhookbot", "text": "This is posted to #slack-command-test and comes from a bot named webhookbot.", "icon_emoji": ":ghost:"}' https://hooks.slack.com/services/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
+
+    payload = '{"channel": "#slack-command-test", "username": "webhookbot", "text": "' + message + '", "icon_emoji": ":ghost:"}'
+    url = 'https://hooks.slack.com/services/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'
+
+    # request = requests.get( 'https://blooming-earth-1399.herokuapp.com/hash_test' )    
+    request = requests.post( url , payload )
+
+    # return the server response
+    return str( request.text )
+
 
 # -------------------------------------------
 # routes ( testing )
@@ -102,29 +142,23 @@ def email_test():
     return 'attempted to send the email :: code got this far';
 
 
-# -------------------------------------------
-# functions
+# http request test
+@app.route('/request_test')
+def request_test():
 
-insults_array = [
-    'smells bad',
-    'is a dumbass',
-    'makes Kim Kardashian look like a goddamn genius',
-    'is unable to see why kids love the great taste of Cinnamon Toast Crunch',
-    'makes baby Jesus cry',
-    'thinks MDMA is a web comic'
-        ]
+    # reference:
+    # curl -X POST --data-urlencode 'payload={"channel": "#slack-command-test", "username": "webhookbot", "text": "This is posted to #slack-command-test and comes from a bot named webhookbot.", "icon_emoji": ":ghost:"}' https://hooks.slack.com/services/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
 
-# insult the user
-def abuse( arguments ):
+    payload = '{"channel": "#slack-command-test", "username": "webhookbot", "text": "This is posted to #slack-command-test and comes from a bot named webhookbot.", "icon_emoji": ":ghost:"}'
+    url = 'https://hooks.slack.com/services/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'
 
-    # generate a random whole number
-    limit = len( insults_array ) - 1
-    insult = insults_array[ random.randint( 0 , limit ) ]
+    # request = requests.get( 'https://blooming-earth-1399.herokuapp.com/hash_test' )    
+    request = requests.post( url , payload )
 
-    # concatenate the arguments into a string
-    victim = ' '.join( arguments )
+    # prepare the output
+    output = request
 
-    return victim + ' ' + insult + '!'
+    return str( request.text )
 
 
 # -------------------------------------------
@@ -152,7 +186,14 @@ def slack():
     # check the command
     
     if str(command) == 'abuse':
-        output = abuse( arguments )
+
+        # prepare the insult
+        message = abuse( arguments )
+
+        # output to slack
+        output = write_to_slack( message )
+
+        # display the result
         return output
 
     return 'does not compute'
